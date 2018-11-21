@@ -9,10 +9,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import iview.wsienski.restexample.R
 import iview.wsienski.restexample.RestExampleApp
 import kotlinx.android.synthetic.main.main_fragment.*
 import javax.inject.Inject
+
+
 
 
 class MainFragment : Fragment() {
@@ -24,6 +27,7 @@ class MainFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel by lazy { ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java) }
+    private val adapter = UserAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,10 +42,10 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        button.setOnClickListener { viewModel.init() }
-        observe(viewModel.users) { users ->
-            message.text = users.map { it.login }.joinToString()
-        }
+        usersList.layoutManager = LinearLayoutManager(activity)
+        usersList.adapter = adapter
+        observe(viewModel.users) { adapter.submitList(it) }
+        observe(viewModel.usersAvatars) { message.text = it.joinToString() }
     }
 
     private fun <T> Fragment.observe(liveData: LiveData<T>, action: (T) -> Unit) =
