@@ -47,6 +47,7 @@ class MainFragment : Fragment() {
         observe(viewModel.usersAvatars) { message.text = it.joinToString() }
         observe(viewModel.screenState) {
             it.error?.let { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
+            loader.visibility = if (it.isLoading) View.VISIBLE else View.GONE
         }
     }
 
