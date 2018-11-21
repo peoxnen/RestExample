@@ -18,6 +18,7 @@ class MainViewModel
     override val users: MutableLiveData<List<User>> = MutableLiveData()
 
     override fun init() {
+        if(users.value != null) return
         compositeDisposable.add(apiService.listUsers(10)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
