@@ -34,7 +34,7 @@ class MainViewModel
 
     override val usersIds: LiveData<List<String>> =
         LiveDataReactiveStreams.fromPublisher(
-            usersRepository.usersIds
+            usersRepository.repoUrls
                 .onErrorReturn { emptyList() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

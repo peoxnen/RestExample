@@ -8,5 +8,5 @@ import iview.wsienski.restexample.data.model.User
  */
 interface IUserRepository {
     val users: Observable<List<User>>
-    val usersIds: Observable<List<String>>
+    val repoUrls: Observable<List<String>>
 }

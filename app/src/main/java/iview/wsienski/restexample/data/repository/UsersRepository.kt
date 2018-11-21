@@ -9,7 +9,7 @@ import iview.wsienski.restexample.data.model.User
  */
 class UsersRepository(apiService: APIService) : IUserRepository {
 
-    override val users: Observable<List<User>> = apiService.listUsers(10)
-    override val usersIds: Observable<List<String>> = apiService.listUsers(10)
-        .map { it.map { it.login } }
+    override val users: Observable<List<User>> = apiService.listUsers(20)
+    override val repoUrls: Observable<List<String>> = apiService.listUsers(5)
+        .map { it.map { it.repos_url } }
 }
