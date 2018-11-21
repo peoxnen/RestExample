@@ -11,5 +11,5 @@ class UsersRepository(apiService: APIService) : IUserRepository {
 
     override val users: Observable<List<User>> = apiService.listUsers(20)
     override val repoUrls: Observable<List<String>> = apiService.listUsers(5)
-        .map { it.map { it.repos_url } }
+        .map { users -> users.map { it.repos_url } }
 }
