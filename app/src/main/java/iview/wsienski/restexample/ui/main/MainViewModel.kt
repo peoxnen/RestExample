@@ -13,22 +13,30 @@ import javax.inject.Inject
 
 class MainViewModel
 @Inject constructor(private val apiService: APIService) : ViewModel(), IMainViewModel {
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+
+    override val screenState: MutableLiveData<ScreenState> = MutableLiveData()
     override val users: MutableLiveData<List<UserView>> = MutableLiveData()
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun init() {
         if (users.value != null) return
         compositeDisposable.add(apiService.listUsers(10)
+            .doOnSubscribe { screenState.postValue(ScreenState(true)) }
+            .doOnComplete { screenState.postValue(ScreenState(false)) }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .map { it.map { UserView(it.login, it.avatar_url) } }
-            .subscribe { t -> users.value = t })
+            .subscribe(
+                { list -> users.value = list },
+                { error -> screenState.postValue(ScreenState(error = error.message)) })
+        )
     }
 
     override val usersAvatars: LiveData<List<String>> =
         LiveDataReactiveStreams.fromPublisher(
             apiService.listUsers(10)
                 .map { it.map { it.login } }
+                .onErrorReturn { emptyList() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .toFlowable(BackpressureStrategy.LATEST))
