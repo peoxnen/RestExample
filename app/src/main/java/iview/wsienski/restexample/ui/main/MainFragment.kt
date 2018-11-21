@@ -28,6 +28,7 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity?.application as RestExampleApp).appComponent.inject(this)
+        viewModel.init()
     }
 
     override fun onCreateView(

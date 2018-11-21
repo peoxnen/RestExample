@@ -7,6 +7,7 @@ import iview.wsienski.restexample.data.model.User
  * Created by Witold Sienski on 20.11.2018.
  */
 interface IMainViewModel {
-   val users: LiveData<List<User>>
+    val users: LiveData<List<User>>
+    val usersAvatars: LiveData<List<String>>
     fun init()
 }
