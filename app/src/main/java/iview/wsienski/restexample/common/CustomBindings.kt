@@ -1,4 +1,4 @@
-package iview.wsienski.restexample
+package iview.wsienski.restexample.common
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter

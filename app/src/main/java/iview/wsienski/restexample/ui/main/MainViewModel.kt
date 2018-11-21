@@ -5,14 +5,16 @@ import androidx.lifecycle.LiveDataReactiveStreams
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.BackpressureStrategy
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import iview.wsienski.restexample.common.ISchedulersProvider
 import iview.wsienski.restexample.data.repository.IUserRepository
 import javax.inject.Inject
 
 class MainViewModel
-@Inject constructor(private val usersRepository: IUserRepository) : ViewModel(), IMainViewModel {
+@Inject constructor(
+    private val usersRepository: IUserRepository,
+    private val schedulersProvider: ISchedulersProvider
+) : ViewModel(), IMainViewModel {
 
     override val screenState: MutableLiveData<ScreenState> = MutableLiveData()
     override val users: MutableLiveData<List<UserView>> = MutableLiveData()
@@ -23,12 +25,12 @@ class MainViewModel
         compositeDisposable.add(usersRepository.users
             .doOnSubscribe { screenState.postValue(ScreenState(true)) }
             .doOnComplete { screenState.postValue(ScreenState(false)) }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(schedulersProvider.io())
+            .observeOn(schedulersProvider.ui())
             .map { it.map { UserView(it.login, it.avatar_url) } }
             .subscribe(
                 { list -> users.value = list },
-                { error -> screenState.postValue(ScreenState(error = error.message)) })
+                { error -> screenState.value = ScreenState(error = error.message) })
         )
     }
 
@@ -36,8 +38,8 @@ class MainViewModel
         LiveDataReactiveStreams.fromPublisher(
             usersRepository.repoUrls
                 .onErrorReturn { emptyList() }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(schedulersProvider.io())
+                .observeOn(schedulersProvider.ui())
                 .toFlowable(BackpressureStrategy.LATEST))
 
     override fun onCleared() {
