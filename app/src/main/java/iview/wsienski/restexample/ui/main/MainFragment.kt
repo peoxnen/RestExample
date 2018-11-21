@@ -44,7 +44,7 @@ class MainFragment : Fragment() {
         usersList.layoutManager = LinearLayoutManager(activity)
         usersList.adapter = adapter
         observe(viewModel.users) { adapter.submitList(it) }
-        observe(viewModel.usersAvatars) { message.text = it.joinToString() }
+        observe(viewModel.usersIds) { message.text = it.joinToString() }
         observe(viewModel.screenState) {
             it.error?.let { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
             loader.visibility = if (it.isLoading) View.VISIBLE else View.GONE
