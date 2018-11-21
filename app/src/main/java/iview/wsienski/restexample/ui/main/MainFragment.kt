@@ -43,14 +43,21 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         usersList.layoutManager = LinearLayoutManager(activity)
         usersList.adapter = adapter
+        observeViewModel()
+    }
+
+    private fun observeViewModel() {
         observe(viewModel.users) { adapter.submitList(it) }
-        observe(viewModel.usersIds) { message.text = it.joinToString(separator = "\n") }
-        observe(viewModel.screenState) {
-            it.error?.let { Toast.makeText(context, it, Toast.LENGTH_LONG).show() }
-            loader.visibility = if (it.isLoading) View.VISIBLE else View.GONE
+        observe(viewModel.usersRepo) { message.text = it }
+        observe(viewModel.screenState) { screenState ->
+            screenState.error?.let { showToast(it) }
+            loader.visibility = if (screenState.isLoading) View.VISIBLE else View.GONE
         }
     }
 
     private fun <T> Fragment.observe(liveData: LiveData<T>, action: (T) -> Unit) =
         liveData.observe(this.viewLifecycleOwner, Observer { action(it) })
+
+    private fun Fragment.showToast(text: String) =
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show()
 }

@@ -8,6 +8,6 @@ import androidx.lifecycle.LiveData
 interface IMainViewModel {
     val users: LiveData<List<UserView>>
     val screenState: LiveData<ScreenState>
-    val usersIds: LiveData<List<String>>
+    val usersRepo: LiveData<String>
     fun init()
 }

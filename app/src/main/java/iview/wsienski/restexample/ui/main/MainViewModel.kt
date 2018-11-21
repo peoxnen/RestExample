@@ -27,17 +27,18 @@ class MainViewModel
             .doOnComplete { screenState.postValue(ScreenState(false)) }
             .subscribeOn(schedulersProvider.io())
             .observeOn(schedulersProvider.ui())
-            .map { it.map { UserView(it.login, it.avatar_url) } }
+            .map { users -> users.map { UserView(it.login, it.avatar_url) } }
             .subscribe(
                 { list -> users.value = list },
                 { error -> screenState.value = ScreenState(error = error.message) })
         )
     }
 
-    override val usersIds: LiveData<List<String>> =
+    override val usersRepo: LiveData<String> =
         LiveDataReactiveStreams.fromPublisher(
             usersRepository.repoUrls
-                .onErrorReturn { emptyList() }
+                .map { it.joinToString(separator = "\n") }
+                .onErrorReturn { "" }
                 .subscribeOn(schedulersProvider.io())
                 .observeOn(schedulersProvider.ui())
                 .toFlowable(BackpressureStrategy.LATEST))
